@@ -85,8 +85,8 @@ Before getting started, make sure you have the following installed:
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/usuario/tienda-online.git
-   cd tienda-online
+   git clone https://github.com/nuriadevs/store-backend-fastapi.git
+   cd evoltronic_store
 2. Build and start the Docker containers:
    ```bash
    docker-compose up --build
