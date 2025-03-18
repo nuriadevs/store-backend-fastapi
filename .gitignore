@@ -1,0 +1,15 @@
+# Archivos de configuración sensibles
+.env
+alembic/env.py
+alembic.ini
+
+# Entornos virtuales
+venv/
+env/
+__pycache__/
+
+# Archivos generados por IDEs
+.vscode/
+
+# Ignorar los resultados de las pruebas de pytest
+.pytest_cache/

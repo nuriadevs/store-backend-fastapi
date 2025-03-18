@@ -1,0 +1,1 @@
+from app.models.product.product import Product
