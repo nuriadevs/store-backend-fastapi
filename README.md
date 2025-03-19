@@ -100,6 +100,8 @@ Before getting started, make sure you have the following installed:
 	```bash   
 	http://localhost:8025/
 ## Usage
+### Postman
+If you want to explore and test the API, you can use the Postman collection we’ve prepared. You can find it in the `api_docs/evoltronic.json` file. Enjoy it!
 Login using the **admin** user provided in the migration
  
 ### Register a new user (client)
