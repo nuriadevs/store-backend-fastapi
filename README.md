@@ -1,122 +1,142 @@
-# Evoltronic Store
-A project focused on an online shop for selling electronic products. You'll find management of products, orders, user authentication, and user registration.
+# Evoltronic Store (Backend)
 
-## Index
+📘 Also available in [Spanish](./README.es.md)
 
-1. [Features](#features)
-2. [Technologies](#technologies)
-3. [Project Structure](#project-structure)
-4. [Installation](#installation)
-5. [Usage](#usage)
-6. [Tests](#tests)
-7. [License](#license)
-8. [Contact](#contact)
-9. [Summary](#summary)
+This application was developed with FastAPI. It is the backend of an online shop for electronic products and provides CRUD operations, user authentication and registration, email verification, password recovery and order management.
 
+## Environment 🛠️
 
-## Features
+- Python 3.13
+- [FastAPI](https://fastapi.tiangolo.com/) 0.115.8
+- [PostgreSQL](https://www.postgresql.org/) 16.8
+- [SQLAlchemy](https://www.sqlalchemy.org/) 2.0.38 + Alembic (migrations)
+- [Pydantic](https://docs.pydantic.dev/) 2.10.6
+- Docker 27.3.1
+- [Mailpit](https://mailpit.axllent.org/) (email testing)
+- API
+- Tests (Pytest)
+- CRUD
+- Postman or Bruno
+- Visual Studio Code
 
-- **User Authentication**: Users can register, log in, email verification, and recover passwords.
-- **Product Management**: Administrators can add, edit, and delete products.
-- **Order Management**: Customers can place orders and view their order details.
-- **Product Categories**: Organizes products into categories for easy navigation.
-- **Email Sending with Mailpit**: Registration, confirmation via emails.
+## Features ✨
 
+- **User authentication**: register, log in, refresh token, email verification and password recovery.
+- **Product management**: administrators can add, edit and delete products.
+- **Category management**: products are organized into categories.
+- **Order management**: customers can place orders and view their order details.
+- **User profiles**: customers can create and update their profile and address.
+- **Email sending with Mailpit**: registration and confirmation emails.
 
-## Technologies
+## Installation ⚙️
 
-This project was developed using the following technologies:
+1.  Clone the repository to your local machine: `git clone https://github.com/nuriadevs/store-backend-fastapi.git`.
+2.  Go into the project folder with `cd store-backend-fastapi`.
+3.  Create your own `.env` file for the environment variables.
+4.  Build and start the Docker containers with `docker-compose up --build`.
+5.  Run the migrations (this also creates the admin user):
 
-- **Python**: version 3.13.0.
-- **FastAPI**: version 0.115.8
-- **PostgreSQL**:version 16.8
-- **Docker**: version 27.3.1
-- **SQLAlchemy**: version  2.0.38
-- **Pydantic**: version 2.10.6
+    `docker exec -it fastapi_app alembic upgrade head`
 
-## Project Structure
+6.  Open the interactive API documentation in your web browser at [http://localhost:8000/docs](http://localhost:8000/docs).
+7.  Open Mailpit to read the emails sent by the application at [http://localhost:8025](http://localhost:8025/).
 
-The project follows a modular to ensure future scalability. Below is the main directory structure:
+> ⚠️ Prerequisites: [Docker](https://www.docker.com/) and Docker Compose. Python and PostgreSQL are only needed if you run the project outside Docker.
 
-``` python
-┣ 📂api
-┃ ┣ 📂routes
-┃ ┃ ┣ 📂admin
-┃ ┃ ┣ 📂auth
-┃ ┃ ┣ 📂client
-┃ ┃ ┗ 📂public
-┃ ┗ 📜api.py
-┣ 📂core
-┣ 📂dependencies
-┣ 📂middlewares
-┣ 📂models
-┃ ┣ 📂category
-┃ ┣ 📂order
-┃ ┣ 📂product
-┃ ┣ 📂user
-┃ ┗ 📜__init__.py
-┣ 📂responses
-┣ 📂schemas
-┣ 📂services
-┃ ┣ 📂category
-┃ ┣ 📂order
-┃ ┣ 📂product
-┃ ┣ 📜email.py
-┃ ┣ 📜user_profile.py
-┃ ┗ 📜user.py
-┣ 📂templates
-┃ ┗ 📂user
-┣ 📂utils
-┗ 📜main.py
-````
+## 📡 API Endpoints
 
-## Installation
+Authentication uses OAuth2 with a Bearer token. The **Access** column shows who can use each route: `Public` (no token), `Auth` (any logged-in user) or `Admin` (administrators only).
 
-## Prerequisites
+| Endpoint               | Method | Route                             | Access |
+| ---------------------- | ------ | --------------------------------- | ------ |
+| **Authentication**     |        |                                   |        |
+| Login                  | POST   | `auth/login`                      | Public |
+| Refresh token          | POST   | `auth/refresh`                    | Public |
+| Forgot password        | POST   | `auth/forgot-password`            | Public |
+| Reset password         | PUT    | `auth/reset-password`             | Public |
+| **Users**              |        |                                   |        |
+| Register               | POST   | `users`                           | Public |
+| Verify account         | POST   | `users/verify`                    | Public |
+| Authenticated user     | GET    | `users/me`                        | Auth   |
+| Show                   | GET    | `users/{user_id}`                 | Admin  |
+| Update username        | PUT    | `users/{user_id}`                 | Auth   |
+| Destroy                | DELETE | `users/{user_id}`                 | Admin  |
+| **User Profile**       |        |                                   |        |
+| Create                 | POST   | `users/profile/create`            | Auth   |
+| My profile             | GET    | `users/profile/me`                | Auth   |
+| Update                 | PUT    | `users/profile/update`            | Auth   |
+| Update address         | PATCH  | `users/profile/{user_id}/address` | Auth   |
+| Show                   | GET    | `users/profile/{user_id}`         | Admin  |
+| Destroy (soft delete)  | DELETE | `users/profile/{user_id}`         | Admin  |
+| **Products**           |        |                                   |        |
+| Index                  | GET    | `products/products/`              | Public |
+| Show                   | GET    | `products/{product_id}`           | Public |
+| Store                  | POST   | `products/create`                 | Admin  |
+| Update                 | PUT    | `products/products/{product_id}`  | Admin  |
+| Destroy                | DELETE | `products/products/{product_id}`  | Admin  |
+| **Categories**         |        |                                   |        |
+| Index                  | GET    | `categories/categories/`          | Auth   |
+| Show                   | GET    | `categories/{category_id}`        | Auth   |
+| Store                  | POST   | `categories/create`               | Admin  |
+| Update                 | PATCH  | `categories/{category_id}`        | Admin  |
+| Destroy                | DELETE | `categories/{category_id}`        | Admin  |
+| **Orders**             |        |                                   |        |
+| Store                  | POST   | `orders/create/`                  | Auth   |
+| My orders              | GET    | `orders/me`                       | Auth   |
+| Index                  | GET    | `orders/orders/`                  | Admin  |
+| Show                   | GET    | `orders/{order_id}`               | Auth   |
+| Update status          | PATCH  | `orders/{order_id}`               | Admin  |
+| Destroy (pending only) | DELETE | `orders/{order_id}`               | Admin  |
+| Cancel (soft delete)   | PATCH  | `orders/{order_id}/delete`        | Auth   |
+| **Public**             |        |                                   |        |
+| Index                  | GET    | `index/`                          | Public |
+| Root                   | GET    | `/`                               | Public |
 
-Before getting started, make sure you have the following installed:
+## Usage 🚀
 
-- **Docker** 
-- **Python** >= 3.8
-- **PostgreSQL**
+### Postman or Bruno
 
-### Installation Instructions
+If you want to explore and test the API, import the file `api_docs/evoltronic.json` into Postman or Bruno. You can also test every route from the interactive documentation at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-1. Clone this repository:
+Log in with the **admin** user created by the migration.
 
-   ```bash
-   git clone https://github.com/nuriadevs/store-backend-fastapi.git
-   cd evoltronic_store
-2. Build and start the Docker containers:
-   ```bash
-   docker-compose up --build
-3. Run the migrations:
-	```bash   
-	docker exec -it fastapi_app alembic upgrade head
-4. Open the browser to view the routes:
-	```bash   
-	http://localhost:8000/docs
-5. Open the browser to receive the emails:
-	```bash   
-	http://localhost:8025/
-## Usage
-### Postman
-If you want to explore and test the API, you can use the Postman collection we’ve prepared. You can find it in the `api_docs/evoltronic.json` file. Enjoy it!
-Login using the **admin** user provided in the migration
- 
+### Log in
+
+The login route uses a form (`application/x-www-form-urlencoded`), not JSON:
+
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=Lolo&password=PassHashed_123!"
+
+```
+
+The response contains `access_token`, `refresh_token`, `expires_in` and `token_type`. Use the token in protected routes:
+
+```bash
+curl http://localhost:8000/users/me \
+  -H "Authorization: Bearer <access_token>"
+
+```
+
+To get a new access token, send the refresh token in the `refresh-token` header to `POST /auth/refresh`.
+
 ### Register a new user (client)
-````
-POST/users
- {
+
+```json
+POST /users
+{
   "username": "Lolo",
   "email": "lolo@example.com",
   "password": "PassHashed_123!"
 }
-````
 
-### Create a new product
-````
-POST/products/create
+```
+
+### Create a new product (admin)
+
+```json
+POST /products/create
 {
   "name": "Laptop",
   "description": "Laptop Samsung ultra.",
@@ -124,20 +144,61 @@ POST/products/create
   "stock": 10,
   "category_id": 1
 }
-````
 
-## Tests
-````
+```
+
+### Create a new order (client)
+
+```json
+POST /orders/create/
+{
+  "user_id": 1,
+  "products": [
+    { "product_id": 1, "quantity": 2 }
+  ]
+}
+
+```
+
+## Tests 🧪
+
+```bash
 docker-compose exec app pytest
-````
+
+```
+
+## Environment Variables
+
+Create your own `.env` file in the root of the project with the variables for the database, the security keys and the email server (Mailpit).
+
+## Postman Demo :man_astronaut:
+
+<img src="./media/1.png" alt="postman" width="600" />
+
+## Links
+
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [SQLAlchemy](https://docs.sqlalchemy.org/en/20/)
+- [Pydantic](https://docs.pydantic.dev/)
+- [Docker](https://www.docker.com/)
+- [Mailpit](https://mailpit.axllent.org/)
+- [Bruno](https://www.usebruno.com/)
+- [Postman](https://www.postman.com/)
 
 ## Contact
-If you have any questions send me an email.
+
+If you have any questions, send me an email.
 
 ✉️ [Email](mailto:nuriadevs@gmail.com)
 
 ## Summary
-- Run the migration to test the application with an admin user.
-- Don't forget to create your own .env file for the variables.
-- This project is under construction...can be improved.
 
+- Run the migration to test the application with an admin user.
+- Don't forget to create your own `.env` file for the variables.
+- The login route expects form data, not JSON.
+- Emails (verification and password recovery) can be read in Mailpit at `http://localhost:8025`.
+- This project is under construction... it can be improved.
+
+## Thank you 🍀
+
+Thank you very much for reading this project.
